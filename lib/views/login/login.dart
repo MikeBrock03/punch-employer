@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_focus_watcher/flutter_focus_watcher.dart';
 import 'package:provider/provider.dart';
-import '../../view_models/companies_view_model.dart';
+import 'package:punch_app/view_models/interns_view_model.dart';
 import '../../database/storage.dart';
 import '../../models/user_model.dart';
 import '../../services/firestore_service.dart';
@@ -13,7 +13,6 @@ import '../../views/welcome/welcome.dart';
 import '../../services/firebase_auth_service.dart';
 import '../../views/home/home.dart';
 import '../../helpers/app_navigator.dart';
-import '../../views/register/register.dart';
 import '../../config/app_config.dart';
 import '../../helpers/message.dart';
 import '../../constants/app_colors.dart';
@@ -177,24 +176,6 @@ class _LoginState extends State<Login> with TickerProviderStateMixin{
 
                       SizedBox(height: 60),
 
-                      Text(AppLocalizations.of(context).translate('register_instead'), style: TextStyle(fontSize: 14, color: Colors.grey[500])),
-
-                      SizedBox(height: 10),
-
-                      SizedBox(
-                          height: 40,
-                          width: 150,
-                          child: TextButton(
-                            onPressed: submitSt ? () async{
-                              await Future.delayed(Duration(milliseconds: 200));
-                              AppNavigator.pushReplace(context: context, page: Register(verified: widget.verified));
-                            } : null,
-                            child: Text(AppLocalizations.of(context).translate('register_now'), style: TextStyle(color: AppColors.primaryColor, fontSize: 14, fontWeight: FontWeight.normal)),
-                          )
-                      ),
-
-                      SizedBox(height: 20)
-
                     ],
 
                   ),
@@ -269,10 +250,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin{
         if (result is UserModel) {
           if (result.status) {
 
-            if(result.roleID == AppConfig.adminUserRole.toDouble()){
+            if(result.roleID == AppConfig.employerUserRole.toDouble()){
               Provider.of<UserViewModel>(context, listen: false).setUserModel(result);
               if (result.verified) {
-                await Provider.of<CompaniesViewModel>(context, listen: false).fetchData(uID: Provider.of<UserViewModel>(context, listen: false).uID);
+                await Provider.of<InternsViewModel>(context, listen: false).fetchData(uID: result.uID);
                 AppNavigator.pushReplace(context: context, page: Home());
               } else {
                 AppNavigator.pushReplace(context: context, page: Verify());

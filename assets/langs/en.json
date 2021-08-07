@@ -156,5 +156,20 @@
   "not_set": "Not set",
   "phone_number": "Phone number",
   "contact_update_success": "Contact info updated successfully",
-  "contact_update_fail": "Unable to update contact info, Please try again later"
+  "contact_update_fail": "Unable to update contact info, Please try again later",
+  "great_to_work_at": "It's great to work at",
+  "set_password": "Set password",
+  "set_password_fail": "Unable to set password, Please try again later",
+  "not_in_time": "You are not in working schedule",
+  "clock_in_or_out": "Clock In/Out",
+  "good_to_checked_in": "It's a good day to be checked in",
+  "tap_to_punch": "Tap here to punch in",
+  "tap_to_punch_out": "Tap here to punch out",
+  "no_company_linked": "There is no company linked to your account",
+  "clock_in_question": "Are you sure to clock in?",
+  "clock_out_question": "Are you sure to clock out?",
+  "clock_in_fail": "Unable to clock in, please try again later",
+  "clock_out_fail": "Unable to clock out, please try again later",
+  "status": "Status",
+  "your_interns": "Your Interns"
 }

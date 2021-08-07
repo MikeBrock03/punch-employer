@@ -37,6 +37,101 @@
             {
               "client_id": "629203927766-3dibmpdc86tfuomfh8n8mov32fh7ar53.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "629203927766-75esp3e1mh12n75g4ruu5u91u3gl8ir6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.punch.android.admin"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:629203927766:android:dbe1d1872ddf1fd6433f77",
+        "android_client_info": {
+          "package_name": "com.punch.android.employer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "629203927766-ln789qheilmuf2ng7uoklq51ccre97gt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.punch.android.employer",
+            "certificate_hash": "d06c1d02087ed2a6ca47c3f165fb6d685a7023a9"
+          }
+        },
+        {
+          "client_id": "629203927766-3dibmpdc86tfuomfh8n8mov32fh7ar53.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyACZLLDUJlfTtdnVvqi0su0E-SFNpSg8YA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "629203927766-3dibmpdc86tfuomfh8n8mov32fh7ar53.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "629203927766-75esp3e1mh12n75g4ruu5u91u3gl8ir6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.punch.android.admin"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:629203927766:android:2f761b13d9513609433f77",
+        "android_client_info": {
+          "package_name": "com.punch.android.intern"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "629203927766-i1oq2e8nouu22a594uecv4jon1m345lt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.punch.android.intern",
+            "certificate_hash": "d06c1d02087ed2a6ca47c3f165fb6d685a7023a9"
+          }
+        },
+        {
+          "client_id": "629203927766-3dibmpdc86tfuomfh8n8mov32fh7ar53.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyACZLLDUJlfTtdnVvqi0su0E-SFNpSg8YA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "629203927766-3dibmpdc86tfuomfh8n8mov32fh7ar53.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "629203927766-75esp3e1mh12n75g4ruu5u91u3gl8ir6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.punch.android.admin"
+              }
             }
           ]
         }

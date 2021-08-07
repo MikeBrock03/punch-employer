@@ -44,6 +44,18 @@ class UserViewModel extends ChangeNotifier{
     return this._userModel.imageURL;
   }
 
+  String get logoURL {
+    return this._userModel.logoURL;
+  }
+
+  String get companyName {
+    return this._userModel.companyName;
+  }
+
+  String get companyID {
+    return this._userModel.companyID;
+  }
+
   String get regCode {
     return this._userModel.regCode;
   }
@@ -54,6 +66,18 @@ class UserViewModel extends ChangeNotifier{
 
   List<String> get tags {
     return this._userModel.tags;
+  }
+
+  String get education {
+    return this._userModel.education;
+  }
+
+  String get certification {
+    return this._userModel.certification;
+  }
+
+  UserModel get userModel {
+    return this._userModel;
   }
 
   bool get status {

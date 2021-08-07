@@ -3,7 +3,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:clippy_flutter/clippy_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../view_models/companies_view_model.dart';
+import 'package:punch_app/view_models/interns_view_model.dart';
 import '../../services/firebase_auth_service.dart';
 import '../../helpers/app_localizations.dart';
 import '../../views/error/error.dart';
@@ -54,10 +54,10 @@ class _SplashState extends State<Splash> {
             if (result is UserModel) {
               if (result.status) {
 
-                if(result.roleID == AppConfig.adminUserRole.toDouble()){
+                if(result.roleID == AppConfig.employerUserRole.toDouble()){
                   Provider.of<UserViewModel>(context, listen: false).setUserModel(result);
                   if (result.verified) {
-                    await Provider.of<CompaniesViewModel>(context, listen: false).fetchData(uID: Provider.of<UserViewModel>(context, listen: false).uID);
+                    await Provider.of<InternsViewModel>(context, listen: false).fetchData(uID: result.uID);
                     AppNavigator.pushReplace(context: context, page: Home());
                   } else {
                     AppNavigator.pushReplace(context: context, page: Verify());

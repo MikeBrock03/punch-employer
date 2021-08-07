@@ -3,7 +3,7 @@ description: Punch Admin App
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -16,7 +16,7 @@ dependencies:
 
   cupertino_icons: ^1.0.2
   provider: ^5.0.0
-  shared_preferences: ^2.0.5
+  shared_preferences: ^2.0.6
   animate_do: ^2.0.0
   http: ^0.13.1
   data_connection_checker: ^0.3.4
@@ -32,9 +32,13 @@ dependencies:
   firebase_storage: ^8.0.1
   cloud_firestore: ^1.0.3
   timer_count_down: ^2.0.0
-  image_picker: ^0.7.4
-  image_cropper: ^1.4.0
-  url_launcher: ^6.0.3
+  #image_picker: ^0.7.4
+  image_picker: ^0.8.0+3
+  image_cropper: ^1.4.1
+  url_launcher: ^6.0.6
+  mapbox_gl: ^0.12.0
+  pull_to_refresh: ^2.0.0
+  carousel_slider: ^3.0.0
 
 dev_dependencies:
   flutter_test:

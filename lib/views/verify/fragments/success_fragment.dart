@@ -3,7 +3,6 @@ import 'package:punch_app/constants/app_colors.dart';
 import 'package:punch_app/helpers/app_localizations.dart';
 import 'package:punch_app/helpers/app_navigator.dart';
 import 'package:punch_app/views/home/home.dart';
-import 'package:punch_app/views/register/register.dart';
 
 class SuccessFragment extends StatelessWidget {
 

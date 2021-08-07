@@ -3,7 +3,6 @@ import 'package:clippy_flutter/diagonal.dart';
 import 'package:flutter/material.dart';
 import '../../views/verify/verify.dart';
 import '../../views/login/login.dart';
-import '../../views/register/register.dart';
 import '../../config/app_config.dart';
 import '../../helpers/app_navigator.dart';
 import '../../constants/app_colors.dart';
@@ -127,37 +126,17 @@ class Welcome extends StatelessWidget {
                   width: 210,
                   height: 55,
                   child: OutlinedButton(
-                    onPressed: () async{
-                      await Future.delayed(Duration(milliseconds: 200));
-                      AppNavigator.pushReplace(context: context, page: Register(verified: verified));
-                    },
-                    child: Text(AppLocalizations.of(context).translate('register'), style: TextStyle(color: AppColors.primaryColor, fontSize: 15, fontWeight: FontWeight.normal)),
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(width: 1, color: AppColors.primaryColor),
-                      shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0))
-                    )
+                      onPressed: () async{
+                        await Future.delayed(Duration(milliseconds: 200));
+                        AppNavigator.pushReplace(context: context, page: Verify());
+                      },
+                      child: Text(AppLocalizations.of(context).translate('enter_reg_code'), style: TextStyle(color: AppColors.primaryColor, fontSize: 15, fontWeight: FontWeight.normal)),
+                      style: OutlinedButton.styleFrom(
+                          side: BorderSide(width: 1, color: AppColors.primaryColor),
+                          shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0))
+                      )
                   ),
                 ),
-                verified != null && verified == false ? Column(
-                  children: [
-                    SizedBox(height: 20),
-                    SizedBox(
-                      width: 210,
-                      height: 55,
-                      child: OutlinedButton(
-                          onPressed: () async{
-                            await Future.delayed(Duration(milliseconds: 200));
-                            AppNavigator.pushReplace(context: context, page: Verify());
-                          },
-                          child: Text(AppLocalizations.of(context).translate('enter_reg_code'), style: TextStyle(color: AppColors.primaryColor, fontSize: 15, fontWeight: FontWeight.normal)),
-                          style: OutlinedButton.styleFrom(
-                              side: BorderSide(width: 1, color: AppColors.primaryColor),
-                              shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0))
-                          )
-                      ),
-                    ),
-                  ],
-                ) : Container()
               ],
             ),
           )

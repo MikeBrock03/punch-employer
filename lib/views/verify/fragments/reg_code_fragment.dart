@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_focus_watcher/flutter_focus_watcher.dart';
 import 'package:provider/provider.dart';
-import 'package:punch_app/services/firestore_service.dart';
-import 'package:timer_count_down/timer_count_down.dart';
+import '../../../view_models/interns_view_model.dart';
+import '../../../models/user_model.dart';
+import '../../../services/firestore_service.dart';
 import '../../../database/storage.dart';
 import '../../../helpers/uppercase_text_formatter.dart';
-import '../../../helpers/loading_dialog.dart';
 import '../../../config/app_config.dart';
 import '../../../constants/app_colors.dart';
 import '../../../helpers/app_localizations.dart';
@@ -36,8 +36,7 @@ class _RegCodeFragmentState extends State<RegCodeFragment> with TickerProviderSt
   ScrollController scrollController = ScrollController();
 
   String regCode;
-  bool regCodeSt, submitSt = true, counterSt = false;
-  String code, email;
+  bool regCodeSt, submitSt = true;
 
   @override
   void initState() {
@@ -57,11 +56,9 @@ class _RegCodeFragmentState extends State<RegCodeFragment> with TickerProviderSt
   Widget regCodeFragmentBody(){
 
     String name = '';
-    code = Provider.of<UserViewModel>(context, listen: false).regCode;
-    email = Provider.of<UserViewModel>(context, listen: false).email;
 
     if(Provider.of<UserViewModel>(context, listen: false).firstName != '' && Provider.of<UserViewModel>(context, listen: false).lastName != ''){
-       name = capitalize(Provider.of<UserViewModel>(context, listen: false).firstName) + ' ' + capitalize(Provider.of<UserViewModel>(context, listen: false).lastName);
+      name = capitalize(Provider.of<UserViewModel>(context, listen: false).firstName) + ' ' + capitalize(Provider.of<UserViewModel>(context, listen: false).lastName);
     }
 
     return FadingEdgeScrollView.fromSingleChildScrollView(
@@ -136,38 +133,6 @@ class _RegCodeFragmentState extends State<RegCodeFragment> with TickerProviderSt
 
                         SizedBox(height: 60),
 
-                        Text(AppLocalizations.of(context).translate('not_receive_code'), style: TextStyle(fontSize: 14, color: Colors.grey[500])),
-
-                        SizedBox(height: 10),
-
-                        counterSt == false ? SizedBox(
-                            height: 40,
-                            width: 200,
-                            child: TextButton(
-                              onPressed: submitSt ? (){
-                                sendEmail();
-                              } : null,
-                              child: Text(AppLocalizations.of(context).translate('send_code_again'), style: TextStyle(color: AppColors.primaryColor, fontSize: 14, fontWeight: FontWeight.normal)),
-                            )
-                        ) : Container(
-                          margin: EdgeInsets.only(top: 12),
-                          child: Countdown(
-                            seconds: 59,
-                            build: (BuildContext context, double time) {
-                              var minutes = (time.toInt() % 3600 ~/ 60).toInt().toString().padLeft(2, '0');
-                              var seconds = (time.toInt() % 60).toInt().toString().padLeft(2, '0');
-                              return Text("$minutes:$seconds", style: TextStyle(fontSize: 14, color: Colors.grey[600]));
-                            },
-                            interval: Duration(milliseconds: 100),
-                            onFinished: () {
-                              print('Timer is done!');
-                              setState(() { counterSt = false; });
-                            },
-                          ),
-                        ),
-
-                        SizedBox(height: 20)
-
                       ],
 
                     ),
@@ -181,28 +146,6 @@ class _RegCodeFragmentState extends State<RegCodeFragment> with TickerProviderSt
     );
   }
 
-  void sendEmail() async{
-    Future.delayed(Duration(milliseconds: 250), (){
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context){
-          return LoadingDialog();
-        },
-      );
-    });
-
-    await Provider.of<UserViewModel>(context, listen: false).sendEmail( message: 'Your registration code is: $code', email: email);
-    await Future.delayed(Duration(milliseconds: 1500), (){
-      Navigator.pop(context);
-    });
-    await Future.delayed(Duration(milliseconds: 800), (){
-      Message.show(widget.globalScaffoldKey, AppLocalizations.of(context).translate('email_sent'));
-    });
-
-    setState(() { counterSt = true; });
-  }
-
   void submitForm() async{
     FocusScope.of(context).unfocus();
 
@@ -214,14 +157,18 @@ class _RegCodeFragmentState extends State<RegCodeFragment> with TickerProviderSt
         regCodeSt = false;
         submitSt = false;
       });
-      
+
       try{
         await Future.delayed(Duration(milliseconds: 2500));
-        if(code.toUpperCase() == regCode.toUpperCase()){
-          await Provider.of<FirestoreService>(context, listen: false).updateVerified(uID: Provider.of<UserViewModel>(context, listen: false).uID);
-          storage.saveBool('verified', true);
+        dynamic result = await Provider.of<FirestoreService>(context, listen: false).getUserDataByRegisterCode(regCode: regCode.toUpperCase());
+
+        if (result is UserModel) {
+
+          Provider.of<UserViewModel>(context, listen: false).setUserModel(result);
+          await Provider.of<InternsViewModel>(context, listen: false).fetchData(uID: result.uID);
           widget.onFinish();
-        }else{
+
+        } else {
           setState(() {
             regCodeSt = true;
             submitSt = true;

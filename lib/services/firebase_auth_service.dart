@@ -8,6 +8,7 @@ class FirebaseAuthService {
 
   final Storage storage = new Storage();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  String uID;
 
   Stream<UserModel> get authStateChanges => _firebaseAuth.authStateChanges().map(_userFromFirebaseUser);
 
@@ -46,6 +47,26 @@ class FirebaseAuthService {
     try{
       UserCredential result = await _firebaseAuth.signInAnonymously();
       return _userFromFirebaseUser(result.user);
+    } on FirebaseAuthException catch(error){
+      return error.message;
+    }
+  }
+
+  Future<dynamic> changePassword({ String email, String password }) async{
+    try{
+      dynamic result;
+
+      UserCredential loginResult = await _firebaseAuth.signInWithEmailAndPassword(email: email, password: 'f8a89e');
+      User user = loginResult.user;
+      this.uID = user.uid;
+
+      await user.updatePassword(password).then((_){
+        result = true;
+      }).catchError((error){
+        result = false;
+      });
+
+      return result;
     } on FirebaseAuthException catch(error){
       return error.message;
     }

@@ -130,6 +130,7 @@ class _LogoPickerState extends State<LogoPicker> {
         sourcePath: imagePath,
         cropStyle: CropStyle.rectangle,
         compressQuality: 70,
+        aspectRatio: CropAspectRatio(ratioX: 1,ratioY: 1),
         aspectRatioPresets: [
           CropAspectRatioPreset.square,
         ],
@@ -141,6 +142,7 @@ class _LogoPickerState extends State<LogoPicker> {
             lockAspectRatio: true),
         iosUiSettings: IOSUiSettings(
           aspectRatioLockEnabled: true,
+          aspectRatioPickerButtonHidden: true,
           minimumAspectRatio: 1.0,
           title: 'Image Cropper',
         )

@@ -14,13 +14,17 @@ class InternsViewModel extends ChangeNotifier{
     try{
       final result =  await FirestoreService().getInternsByCompanyID(uID: uID);
 
-      if(refresh != null && refresh){
-        this._internList.clear();
+
+      if(result != null){
+        if(refresh != null && refresh){
+          this._internList.clear();
+        }
+
+        this._internList = result.map<UserModel>((model) => UserModel.fromJson(model.id, model.data())).toList();
+
+        notifyListeners();
       }
 
-      this._internList = result.map<UserModel>((model) => UserModel.fromJson(model.id, model.data())).toList();
-
-      notifyListeners();
       return true;
     }catch(error){
       print('error: $error');

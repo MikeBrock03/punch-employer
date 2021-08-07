@@ -1,10 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import '../../constants/app_colors.dart';
 import '../../helpers/app_localizations.dart';
 import '../../helpers/app_navigator.dart';
 import '../../views/welcome/welcome.dart';
+import 'fragments/password_fragment.dart';
 import 'fragments/success_fragment.dart';
 import 'fragments/reg_code_fragment.dart';
 
@@ -16,7 +16,7 @@ class Verify extends StatefulWidget {
 class _VerifyState extends State<Verify> {
 
   final _globalScaffoldKey = GlobalKey<ScaffoldState>();
-  var _regCodePage, _successPage;
+  var _regCodePage, _passwordPage, _successPage;
   static const _kDuration = const Duration(milliseconds: 300);
   static const _kCurve = Curves.ease;
 
@@ -51,47 +51,19 @@ class _VerifyState extends State<Verify> {
 
 
   Widget buildPageView() {
-    return Stack(
-      children: [
-        PageView.builder(
-          itemBuilder: (context, index) {
-            if (index == 0) return this.regCodeInit();
-            if (index == 1) return this.successInit();
-            return null;
-          },
-          physics: NeverScrollableScrollPhysics(),
-          controller: pageController,
-          itemCount: 2,
-          onPageChanged: (index) {
-            //pageChanged(index);
-            FocusScope.of(context).requestFocus(new FocusNode());
-          },
-        ),
-
-        // check if the keyboard is appear then hide the page indicator
-        MediaQuery.of(context).viewInsets.bottom == 0 ? Positioned(
-            bottom: 10.0,
-            left: 0.0,
-            right: 0.0,
-            child: new Container(
-              padding: const EdgeInsets.all(20.0),
-              child: new Center(
-                child: new DotsIndicator(
-                  controller: pageController,
-                  itemCount: 2,
-                  color: AppColors.primaryColor,
-                  onPageSelected: (int page) {
-                    pageController.animateToPage(
-                      page,
-                      duration: _kDuration,
-                      curve: _kCurve,
-                    );
-                  },
-                ),
-              ),
-            )
-        ) : Container()
-      ],
+    return PageView.builder(
+      itemBuilder: (context, index) {
+        if (index == 0) return this.regCodeInit();
+        if (index == 1) return this.passwordInit();
+        if (index == 2) return this.successInit();
+        return null;
+      },
+      physics: NeverScrollableScrollPhysics(),
+      controller: pageController,
+      itemCount: 3,
+      onPageChanged: (index) {
+        FocusScope.of(context).requestFocus(new FocusNode());
+      },
     );
   }
 
@@ -100,6 +72,13 @@ class _VerifyState extends State<Verify> {
       pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.ease);
     });
     return this._regCodePage;
+  }
+
+  Widget passwordInit(){
+    if(this._passwordPage == null) this._passwordPage = PasswordFragment(globalScaffoldKey: _globalScaffoldKey, onFinish: (){
+      pageController.animateToPage(2, duration: Duration(milliseconds: 500), curve: Curves.ease);
+    });
+    return this._passwordPage;
   }
 
   Widget successInit(){

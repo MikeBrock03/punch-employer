@@ -1,19 +1,16 @@
 
-import 'dart:io';
 import 'package:animate_do/animate_do.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_focus_watcher/flutter_focus_watcher.dart';
 import 'package:provider/provider.dart';
+import 'package:punch_app/view_models/user_view_model.dart';
 import 'components/logo_picker.dart';
 import '../../view_models/companies_view_model.dart';
 import '../../services/firebase_storage.dart';
 import '../../helpers/loading_dialog.dart';
-import '../../services/firebase_auth_service.dart';
 import '../../models/user_model.dart';
 import '../../services/firestore_service.dart';
-import '../../view_models/user_view_model.dart';
 import '../../helpers/fading_edge_scrollview.dart';
 import '../../helpers/app_text_field.dart';
 import '../../config/app_config.dart';
@@ -37,7 +34,7 @@ class _CompanyFormState extends State<CompanyForm> {
   final _globalScaffoldKey = GlobalKey<ScaffoldState>();
   ScrollController scrollController = ScrollController();
 
-  String companyName, employerFirstName, employerLastName, email, imageUrl, employerEducation, employerCertification;
+  String companyName, employerFirstName, employerLastName, email, imageUrl, employerEducation, employerCertification, tel;
   bool submitSt = true;
 
   @override
@@ -51,6 +48,7 @@ class _CompanyFormState extends State<CompanyForm> {
       imageUrl = widget.userModel.logoURL != null && widget.userModel.logoURL != '' ? widget.userModel.logoURL : null;
       employerEducation = widget.userModel.education;
       employerCertification = widget.userModel.certification;
+      tel = widget.userModel.mobile != null && widget.userModel.mobile != '' ? widget.userModel.mobile : widget.userModel.tel;
     }
   }
 
@@ -60,18 +58,14 @@ class _CompanyFormState extends State<CompanyForm> {
       child: Scaffold(
         key: _globalScaffoldKey,
         appBar: AppBar(
-          title: Text( widget.userModel != null ? AppLocalizations.of(context).translate('edit') + ' ' + widget.userModel.companyName : AppLocalizations.of(context).translate('add_company'), style: TextStyle(fontSize: 18)),
+          title: Text( AppLocalizations.of(context).translate('edit') + ' ' + AppLocalizations.of(context).translate('profile'), style: TextStyle(fontSize: 18)),
           centerTitle: true,
           brightness: Brightness.dark,
           actions: [
             TextButton(
               onPressed: () {
                 if(submitSt){
-                  if(widget.userModel != null){
-                    updateProfile();
-                  }else{
-                    submitForm();
-                  }
+                  updateProfile();
                 }
               },
               style: TextButton.styleFrom(
@@ -118,7 +112,7 @@ class _CompanyFormState extends State<CompanyForm> {
                         SizedBox(height: 25),
 
                         AppTextField(
-                          isEnable: submitSt,
+                          isEnable: false,
                           labelText: AppLocalizations.of(context).translate('company_name'),
                           inputAction: TextInputAction.next,
                           textCapitalization: TextCapitalization.sentences,
@@ -141,7 +135,7 @@ class _CompanyFormState extends State<CompanyForm> {
                         ),
 
                         AppTextField(
-                          isEnable: submitSt,
+                          isEnable: false,
                           labelText: AppLocalizations.of(context).translate('employer_first_name'),
                           inputAction: TextInputAction.next,
                           textCapitalization: TextCapitalization.sentences,
@@ -164,7 +158,7 @@ class _CompanyFormState extends State<CompanyForm> {
                         ),
 
                         AppTextField(
-                          isEnable: submitSt,
+                          isEnable: false,
                           labelText: AppLocalizations.of(context).translate('employer_last_name'),
                           inputAction: TextInputAction.next,
                           textCapitalization: TextCapitalization.sentences,
@@ -208,157 +202,29 @@ class _CompanyFormState extends State<CompanyForm> {
                           },
                         ),
 
-                        widget.userModel == null ? AppTextField(
+                        AppTextField(
                           isEnable: submitSt,
-                          labelText: AppLocalizations.of(context).translate('employer_email'),
-                          textInputFormatter: [FilteringTextInputFormatter.deny(RegExp('[ ]'))],
+                          labelText: 'Employer phone',
                           inputAction: TextInputAction.done,
-                          textInputType: TextInputType.emailAddress,
-                          onValidate: (value){
-
-                            Pattern pattern = '[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}';
-
-                            if (value.isEmpty) {
-                              return AppLocalizations.of(context).translate('employer_email_empty_validate');
-                            }
-
-                            if (!RegExp(pattern).hasMatch(value)){
-                              return AppLocalizations.of(context).translate('employer_email_validate');
-                            }
-
-                            return null;
-                          },
-
-                          onFieldSubmitted: (value){
-                            email = value;
-                            FocusScope.of(context).unfocus();
-                          },
-
+                          textInputType: TextInputType.phone,
+                          value: tel,
                           onChanged: (value){
-                            email = value;
+                            tel = value;
                           },
-                        ) : Container(),
+                        ),
 
                         SizedBox(height: 20)
 
                       ],
-
                     ),
                   ),
                 )
-
               ],
             ),
           ),
         ),
       ),
     );
-  }
-
-  void submitForm() async{
-
-    FocusScope.of(context).unfocus();
-
-    if (_formKey.currentState.validate()) {
-
-      Future.delayed(Duration(milliseconds: 250), (){
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context){
-            return LoadingDialog();
-          },
-        );
-      });
-
-      setState(() {
-        submitSt = false;
-      });
-
-      try{
-
-        dynamic result = await Provider.of<FirebaseAuthService>(context, listen: false).registerWithoutAuth(email: email.trim());
-
-        if (result is UserModel) {
-
-          if(imageUrl != null){
-            dynamic uploadResult =  await Provider.of<FirebaseStorage>(context, listen: false).uploadLogo(imagePath: imageUrl, uID: result.uID);
-            result.logoURL = uploadResult != null && Uri.tryParse(uploadResult).isAbsolute ? uploadResult : null;
-            createProfile(result);
-          }else{
-            createProfile(result);
-          }
-
-        } else {
-          setState(() {
-            submitSt = true;
-          });
-
-          await Future.delayed(Duration(milliseconds: 1500), (){Navigator.pop(context);});
-          await Future.delayed(Duration(milliseconds: 800), (){Message.show(_globalScaffoldKey, result.toString());});
-        }
-      }catch(error){
-        if(!AppConfig.isPublished){
-          print('$error');
-        }
-
-        setState(() {
-          submitSt = true;
-        });
-
-        await Future.delayed(Duration(milliseconds: 1500), (){Navigator.pop(context);});
-        await Future.delayed(Duration(milliseconds: 800), (){Message.show(_globalScaffoldKey, AppLocalizations.of(context).translate('company_add_fail'));});
-
-      }
-    }
-  }
-
-  void createProfile(UserModel model) async{
-
-    try{
-      String regCode = model.uID.toUpperCase().substring(0, 6);
-
-      UserModel userModel = UserModel(
-        uID: model.uID,
-        firstName: employerFirstName.trim(),
-        lastName: employerLastName.trim(),
-        logoURL: model.logoURL != null ? model.logoURL : '',
-        education: employerEducation.trim(),
-        certification: employerCertification.trim(),
-        companyName: companyName.trim(),
-        email: email.trim(),
-        platform: Platform.operatingSystem,
-        registererID: Provider.of<UserViewModel>(context, listen: false).uID,
-        createdAt: Timestamp.now(),
-        roleID: AppConfig.employerUserRole.toDouble(),
-        tags: [employerFirstName.trim().toLowerCase(), employerLastName.trim().toLowerCase(), '${employerFirstName.trim().toLowerCase()} ${employerLastName.trim().toLowerCase()}' , email.trim().toLowerCase(), companyName.toLowerCase(), regCode],
-        regCode: regCode,
-        status: true,
-        verified: false,
-        hasPassword: false
-      );
-
-      await Provider.of<FirestoreService>(context, listen: false).createProfile(userModel: userModel);
-      await Provider.of<UserViewModel>(context, listen: false).sendEmail( message: 'Your registration code is: $regCode', email: userModel.email);
-      await Provider.of<UserViewModel>(context, listen: false).sendEmail( message: '${companyName.trim()} company registration code is: $regCode', email: Provider.of<UserViewModel>(context, listen: false).email);
-      Provider.of<CompaniesViewModel>(context, listen: false).addToList(model: userModel);
-
-      await Future.delayed(Duration(milliseconds: 1500), (){Navigator.pop(context);});
-      await Future.delayed(Duration(milliseconds: 800), (){Message.show(_globalScaffoldKey, AppLocalizations.of(context).translate('company_add_success'));});
-      await Future.delayed(Duration(milliseconds: 1500), (){Navigator.pop(context);});
-
-    }catch(error){
-      if(!AppConfig.isPublished){
-        print('$error');
-      }
-
-      setState(() {
-        submitSt = true;
-      });
-
-      await Future.delayed(Duration(milliseconds: 1500), (){Navigator.pop(context);});
-      await Future.delayed(Duration(milliseconds: 800), (){Message.show(_globalScaffoldKey, AppLocalizations.of(context).translate('company_add_fail'));});
-    }
   }
 
   void updateProfile() async{
@@ -395,21 +261,23 @@ class _CompanyFormState extends State<CompanyForm> {
         model.lastName = employerLastName.trim();
         model.education = employerEducation != null ? employerEducation.trim() : null;
         model.certification = employerCertification != null ? employerCertification.trim() : null;
+        model.tel = tel != null ? tel.trim() : null;
 
         dynamic result = await Provider.of<FirestoreService>(context, listen: false).updateProfile(userModel: model);
 
         if(result is bool && result){
-          Provider.of<CompaniesViewModel>(context, listen: false).updateList(model: model);
+
+          Provider.of<UserViewModel>(context, listen: false).setUserModel(model);
 
           await Future.delayed(Duration(milliseconds: 1500), (){Navigator.pop(context);});
           await Future.delayed(Duration(milliseconds: 800), (){Message.show(_globalScaffoldKey, AppLocalizations.of(context).translate('company_update_success'));});
           await Future.delayed(Duration(milliseconds: 1500), (){Navigator.pop(context);});
-          widget.onFinish();
+          //widget.onFinish();
         }else{
           setState(() {
             submitSt = true;
           });
-          widget.onFinish();
+          //widget.onFinish();
           await Future.delayed(Duration(milliseconds: 1500), (){Navigator.pop(context);});
           await Future.delayed(Duration(milliseconds: 800), (){Message.show(_globalScaffoldKey, AppLocalizations.of(context).translate('company_update_fail'));});
         }

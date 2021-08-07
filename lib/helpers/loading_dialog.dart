@@ -57,7 +57,7 @@ class _LoadingDialogState extends State<LoadingDialog> with SingleTickerProvider
                     child: Stack(
                       children: <Widget>[
                         Container(
-                            padding: EdgeInsets.only(right: 15, left: 25),
+                            padding: EdgeInsets.only(right: 10, left: 20),
                             width: double.infinity,
                             height: 100,
                             color: Colors.white,

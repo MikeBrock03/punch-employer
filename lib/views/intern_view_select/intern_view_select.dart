@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:punch_app/views/contact_info/contact_info.dart';
+import 'package:punch_app/views/schedules/schedules.dart';
 import '../../views/clocks_detail/clocks_detail.dart';
 import '../../constants/app_colors.dart';
 import '../../helpers/app_navigator.dart';
@@ -12,12 +14,12 @@ import '../../helpers/question_dialog.dart';
 import '../../models/user_model.dart';
 import '../../services/firestore_service.dart';
 import '../../view_models/interns_view_model.dart';
-import '../../views/intern_form/intern_form.dart';
 
 class InternViewSelect extends StatefulWidget {
 
   UserModel intern;
-  InternViewSelect({ this.intern });
+  String from;
+  InternViewSelect({ this.intern, this.from });
 
   @override
   _InternViewSelectState createState() => _InternViewSelectState();
@@ -36,18 +38,12 @@ class _InternViewSelectState extends State<InternViewSelect> {
         centerTitle: true,
         brightness: Brightness.dark,
         actions: [
-          IconButton(
-            tooltip: AppLocalizations.of(context).translate('delete'),
-            icon: Icon(Icons.delete_outline),
-            onPressed: () => delete(),
-          ),
-
           Padding(
-            padding: const EdgeInsets.only(right: 5.0),
+            padding: const EdgeInsets.all(5.0),
             child: IconButton(
-              tooltip: AppLocalizations.of(context).translate('edit'),
-              icon: Icon(Icons.edit_outlined),
-              onPressed: () => AppNavigator.push(context: context, page: InternForm(userModel: widget.intern, onFinish:() => setState(() {}))),
+              tooltip: AppLocalizations.of(context).translate('schedules'),
+              icon: Icon(FontAwesomeIcons.clock, size: 21),
+              onPressed: () => AppNavigator.push(context: context, page: Schedules(intern: widget.intern, from: widget.from)),
             ),
           ),
         ],
@@ -103,7 +99,7 @@ class _InternViewSelectState extends State<InternViewSelect> {
       children: [
         Center(
           child: Hero(
-            tag: widget.intern.uID,
+            tag: widget.from+widget.intern.uID,
             child: Container(
                 width: 130,
                 height: 130,
@@ -128,9 +124,9 @@ class _InternViewSelectState extends State<InternViewSelect> {
                     imageUrl: widget.intern.imageURL,
                     width: 130,
                     height: 130,
-                    fit: BoxFit.fitHeight,
+                    fit: BoxFit.cover,
                   ),
-                ) : ClipRRect(borderRadius: BorderRadius.circular(600), child: Container(color: Colors.grey[200], child: Center(child: Text(widget.intern.firstName, style: TextStyle(fontSize: 13, color: Colors.grey[500], decoration: TextDecoration.none)))))
+                ) : ClipRRect(borderRadius: BorderRadius.circular(600), child: Container(padding: EdgeInsets.all(5) ,color: Colors.grey[200], child: Center(child: Text(widget.intern.firstName, style: TextStyle(fontSize: 13, color: Colors.grey[500], decoration: TextDecoration.none), textAlign: TextAlign.center))))
             ),
           ),
         ),
@@ -146,7 +142,7 @@ class _InternViewSelectState extends State<InternViewSelect> {
           child: OutlinedButton(
               onPressed: () async{
                 await Future.delayed(Duration(milliseconds: 200));
-                AppNavigator.push(context: context, page: ClocksDetail(intern: widget.intern));
+                AppNavigator.push(context: context, page: ClocksDetail(intern: widget.intern, from: widget.from));
               },
               child: Text(AppLocalizations.of(context).translate('clock_in_out'), style: TextStyle(color: AppColors.primaryColor, fontSize: 15, fontWeight: FontWeight.normal)),
               style: OutlinedButton.styleFrom(
@@ -166,7 +162,7 @@ class _InternViewSelectState extends State<InternViewSelect> {
           child: OutlinedButton(
               onPressed: () async{
                 await Future.delayed(Duration(milliseconds: 200));
-                AppNavigator.push(context: context, page: ContactInfo(userModel: widget.intern, isIntern: true));
+                AppNavigator.push(context: context, page: ContactInfo(userModel: widget.intern, isIntern: true, from: widget.from));
               },
               child: Text(AppLocalizations.of(context).translate('contact_info'), style: TextStyle(color: AppColors.primaryColor, fontSize: 15, fontWeight: FontWeight.normal)),
               style: OutlinedButton.styleFrom(

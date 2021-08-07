@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import '../../views/intern_form/intern_form.dart';
+import 'package:punch_app/view_models/interns_view_model.dart';
 import '../../views/company_form/company_form.dart';
 import '../../view_models/user_view_model.dart';
 import '../../helpers/message.dart';
 import '../../database/storage.dart';
 import '../../constants/app_colors.dart';
 import '../../helpers/question_dialog.dart';
-import '../../views/home/fragments/company_fragment/company_fragment.dart';
-import '../../views/home/fragments/intern_fragment/intern_fragment.dart';
+import '../../views/home/fragments/interns_fragment/interns_fragment.dart';
+import '../../views/home/fragments/status_fragment/status_fragment.dart';
 import '../../views/welcome/welcome.dart';
 import '../../config/app_config.dart';
 import '../../helpers/app_localizations.dart';
@@ -26,7 +26,7 @@ class _HomeState extends State<Home> {
   final Storage storage = new Storage();
   final globalScaffoldKey = GlobalKey<ScaffoldState>();
   int bottomSelectedIndex = 0;
-  var _internPage, _companyPage;
+  var _statusPage, _internsPage;
   int backPress = 0;
 
   @override
@@ -59,11 +59,14 @@ class _HomeState extends State<Home> {
           title: Text(AppLocalizations.of(context).translate('app_title'), style: TextStyle(fontSize: 18)),
           centerTitle: true,
           brightness: Brightness.dark,
-          /*leading: IconButton(
+          leading: IconButton(
             tooltip: AppLocalizations.of(context).translate('profile'),
             icon: Icon(Icons.person),
-            onPressed: () => AppNavigator.push(context: context, page: Profile()),
-          ),*/
+            onPressed: () => AppNavigator.push(context: context, page: CompanyForm(
+                userModel: Provider.of<UserViewModel>(context, listen: false).userModel
+              )
+            ),
+          ),
           actions: [
             Padding(
               padding: const EdgeInsets.all(5.0),
@@ -77,23 +80,6 @@ class _HomeState extends State<Home> {
         ),
         body: buildPageView(),
         bottomNavigationBar: bottomNavBar(),
-        floatingActionButton: FloatingActionButton(
-          heroTag: null,
-          backgroundColor: AppColors.primaryColor,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          child: Icon(Icons.add, size: 25,),
-          onPressed: () {
-            switch (bottomSelectedIndex) {
-              case 0:
-                AppNavigator.push(context: context, page: InternForm());
-                break;
-              case 1:
-                AppNavigator.push(context: context, page: CompanyForm());
-                break;
-            }
-          },
-        ),
       ),
     );
   }
@@ -119,8 +105,8 @@ class _HomeState extends State<Home> {
   Widget buildPageView() {
     return PageView.builder(
       itemBuilder: (context, index) {
-        if (index == 0) return this.internInit();
-        if (index == 1) return this.companyInit();
+        if (index == 0) return this.statusInit();
+        if (index == 1) return this.internsInit();
         return null;
       },
       physics: BouncingScrollPhysics(),
@@ -151,12 +137,12 @@ class _HomeState extends State<Home> {
         },
         items: [
           BottomNavigationBarItem(
-              icon: FaIcon(FontAwesomeIcons.users, size: 22),
-              title: Padding( padding: EdgeInsets.fromLTRB(0, 4, 0, 0),child: Text(AppLocalizations.of(context).translate('interns'), style: TextStyle(fontSize: 11, fontWeight: FontWeight.normal)))
+              icon: FaIcon(FontAwesomeIcons.clock, size: 22),
+              title: Padding( padding: EdgeInsets.fromLTRB(0, 4, 0, 0),child: Text(AppLocalizations.of(context).translate('status'), style: TextStyle(fontSize: 11, fontWeight: FontWeight.normal)))
           ),
           BottomNavigationBarItem(
-              icon: FaIcon(FontAwesomeIcons.building, size: 22),
-              title: Padding( padding: EdgeInsets.fromLTRB(0, 4, 0, 0),child: Text(AppLocalizations.of(context).translate('companies'), style: TextStyle(fontSize: 11, fontWeight: FontWeight.normal)))
+              icon: FaIcon(FontAwesomeIcons.users, size: 22),
+              title: Padding( padding: EdgeInsets.fromLTRB(0, 4, 0, 0),child: Text(AppLocalizations.of(context).translate('interns'), style: TextStyle(fontSize: 11, fontWeight: FontWeight.normal)))
           ),
 
         ],
@@ -164,14 +150,14 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget internInit(){
-    if(this._internPage == null) this._internPage = InternFragment(globalScaffoldKey: globalScaffoldKey);
-    return this._internPage;
+  Widget statusInit(){
+    if(this._statusPage == null) this._statusPage = StatusFragment(globalScaffoldKey: globalScaffoldKey);
+    return this._statusPage;
   }
 
-  Widget companyInit(){
-    if(this._companyPage == null) this._companyPage = CompanyFragment(globalScaffoldKey: globalScaffoldKey);
-    return this._companyPage;
+  Widget internsInit(){
+    if(this._internsPage == null) this._internsPage = InternsFragment(globalScaffoldKey: globalScaffoldKey);
+    return this._internsPage;
   }
 
   void logout(){
@@ -197,6 +183,7 @@ class _HomeState extends State<Home> {
       await Provider.of<FirebaseAuthService>(context, listen: false).signOut();
       await storage.clearAll();
       Provider.of<UserViewModel>(context, listen: false).setUserModel(null);
+      Provider.of<InternsViewModel>(context, listen: false).internList.clear();
       AppNavigator.pushReplace(context: context, page: Welcome());
     }catch(error) {
       if (!AppConfig.isPublished) {

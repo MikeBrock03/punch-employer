@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.punch.android.admin">
+    package="com.punch.android.employer">
 
     <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -20,7 +20,7 @@
     </queries>
 
    <application
-        android:label="Punch Admin"
+        android:label="Punch Employer"
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true">
         <activity
